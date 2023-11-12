@@ -371,12 +371,12 @@ def parse_rinex_nav_msg_gps(file_name):
         rinex_ver = int(float(line[0:9]))
         if line[20] != "N":
           raise RuntimeError("Doesn't appear to be a Navigation Message file")
-      #if line[60:69] == "ION ALPHA":
-      #  line = line.replace('D', 'E')  # Handle bizarro float format
-      #  ion_alpha= [float(line[3:14]), float(line[15:26]), float(line[27:38]), float(line[39:50])]
-      #if line[60:68] == "ION BETA":
-      #  line = line.replace('D', 'E')  # Handle bizarro float format
-      #  ion_beta= [float(line[3:14]), float(line[15:26]), float(line[27:38]), float(line[39:50])]
+      if line[60:69] == "ION ALPHA":
+       line = line.replace('D', 'E')  # Handle bizarro float format
+       ion_alpha= [float(line[3:14]), float(line[15:26]), float(line[27:38]), float(line[39:50])]
+      if line[60:68] == "ION BETA":
+       line = line.replace('D', 'E')  # Handle bizarro float format
+       ion_beta= [float(line[3:14]), float(line[15:26]), float(line[27:38]), float(line[39:50])]
       if line[60:73] == "END OF HEADER":
         #ion = ion_alpha + ion_beta
         got_header = True
@@ -399,6 +399,8 @@ def parse_rinex_nav_msg_gps(file_name):
     line = line.replace('D', 'E')  # Handle bizarro float format
     e = {'svId': sv_id}
     # TODO are TOC and TOE the same?
+    e['ionoAlpha'] = ion_alpha
+    e['ionoBeta'] = ion_beta
     e['toc'] = epoch.tow
     e['tocWeek'] = epoch.week
     e['af0'] = float(line[23:42])
